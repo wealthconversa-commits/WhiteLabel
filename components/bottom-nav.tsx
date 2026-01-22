@@ -13,7 +13,7 @@ export function BottomNav() {
 
   const navItems = [
     { href: "/dashboard", label: "Painel", icon: LayoutDashboard },
-    { href: "/connect", label: "Instâncias", icon: Smartphone },
+    { href: "/connect", label: "Conectar", icon: Smartphone },
     { href: "/dashboard", label: "Status", icon: Activity },
     { href: "/profile", label: "Perfil", icon: User },
   ]

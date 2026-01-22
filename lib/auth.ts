@@ -1,4 +1,4 @@
-import { getSupabaseServerClient, getSupabaseServiceClient } from "@/lib/supabase/server"
+import { getSupabaseServerClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from "uuid"
@@ -38,8 +38,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 // Create a new session for a user
 export async function createSession(userId: string): Promise<string> {
-  // Use SERVICE ROLE to bypass RLS for session creation
-  const supabase = await getSupabaseServiceClient()
+  const supabase = await getSupabaseServerClient()
   const sessionToken = uuidv4()
   const expiresAt = new Date()
   expiresAt.setDate(expiresAt.getDate() + SESSION_DURATION_DAYS)
@@ -107,8 +106,7 @@ export async function deleteSession(): Promise<void> {
   const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value
 
   if (sessionToken) {
-    // Use SERVICE ROLE to bypass RLS for session deletion
-    const supabase = await getSupabaseServiceClient()
+    const supabase = await getSupabaseServerClient()
     await supabase.from("sessions").delete().eq("token", sessionToken)
   }
 
@@ -122,8 +120,7 @@ export async function registerUser(
   companyName: string,
   responsibleName: string
 ): Promise<{ success: boolean; error?: string; user?: User }> {
-  // Use SERVICE ROLE to bypass RLS for user creation
-  const supabase = await getSupabaseServiceClient()
+  const supabase = await getSupabaseServerClient()
 
   // Check if email already exists
   const { data: existingUser } = await supabase

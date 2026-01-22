@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getSupabaseServerClient, getSupabaseServiceClient } from "@/lib/supabase/server"
+import { getSupabaseServerClient } from "@/lib/supabase/server"
 import { getCurrentUser, isAdmin } from "@/lib/auth"
 import { logAudit } from "@/lib/audit-log"
 import { getClientIp } from "@/lib/rate-limit"
@@ -68,8 +68,7 @@ export async function PATCH(request: Request) {
       )
     }
 
-    // Use SERVICE ROLE client for admin write operations
-    const supabase = await getSupabaseServiceClient()
+    const supabase = await getSupabaseServerClient()
     let updateData: Record<string, string> = {}
 
     switch (action) {

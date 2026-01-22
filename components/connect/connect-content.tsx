@@ -163,7 +163,7 @@ export function ConnectContent() {
                 className="w-full mt-4"
               >
                 {isCreating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Criar Primeira Instância
+                Conectar Whatsapp
               </Button>
             </CardContent>
           </Card>
