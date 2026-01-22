@@ -1,7 +1,24 @@
-import { getSupabaseServerClient } from "@/lib/supabase/server"
+import { getSupabaseServerClient, getSupabaseServiceClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from "uuid"
+
+// Helper to get the appropriate Supabase client
+// Uses service role if available (for production), falls back to anon key
+function getAuthClient() {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return getSupabaseServiceClient()
+  }
+  // This will be awaited when used
+  return null
+}
+
+async function getAuthClientAsync() {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return getSupabaseServiceClient()
+  }
+  return await getSupabaseServerClient()
+}
 
 export type UserRole = "ADMIN" | "USER"
 export type UserStatus = "PENDING" | "APPROVED" | "SUSPENDED"
@@ -71,7 +88,8 @@ export async function getSession(): Promise<Session | null> {
     return null
   }
 
-  const supabase = await getSupabaseServerClient()
+  // Use service role to bypass RLS when reading sessions
+  const supabase = await getAuthClientAsync()
   const { data: session } = await supabase
     .from("sessions")
     .select("*")
@@ -90,7 +108,8 @@ export async function getCurrentUser(): Promise<User | null> {
     return null
   }
 
-  const supabase = await getSupabaseServerClient()
+  // Use service role to bypass RLS when reading users
+  const supabase = await getAuthClientAsync()
   const { data: user } = await supabase
     .from("users")
     .select("id, email, company_name, responsible_name, role, status, created_at, updated_at")

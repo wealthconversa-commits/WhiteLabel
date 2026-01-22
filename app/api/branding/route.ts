@@ -74,7 +74,7 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { appName, logoUrl, primaryColor, secondaryColor } = body
 
-    // Get current user
+    // Get current user using custom auth (cookie → sessions → users)
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json(
@@ -83,7 +83,23 @@ export async function PUT(request: Request) {
       )
     }
 
+    // Only ADMIN can update branding
+    if (user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Permissao negada. Apenas administradores podem alterar o branding." },
+        { status: 403 }
+      )
+    }
+
     // Use SERVICE ROLE client for write operations (bypasses RLS)
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("[v0] SUPABASE_SERVICE_ROLE_KEY not configured")
+      return NextResponse.json(
+        { error: "Configuracao do servidor incompleta" },
+        { status: 500 }
+      )
+    }
+
     const supabase = getSupabaseServiceClient()
 
     // Check if branding exists for this user
