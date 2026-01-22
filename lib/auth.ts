@@ -3,23 +3,6 @@ import { cookies } from "next/headers"
 import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from "uuid"
 
-// Helper to get the appropriate Supabase client
-// Uses service role if available (for production), falls back to anon key
-function getAuthClient() {
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return getSupabaseServiceClient()
-  }
-  // This will be awaited when used
-  return null
-}
-
-async function getAuthClientAsync() {
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return getSupabaseServiceClient()
-  }
-  return await getSupabaseServerClient()
-}
-
 export type UserRole = "ADMIN" | "USER"
 export type UserStatus = "PENDING" | "APPROVED" | "SUSPENDED"
 
@@ -88,14 +71,24 @@ export async function getSession(): Promise<Session | null> {
     return null
   }
 
-  // Use service role to bypass RLS when reading sessions
-  const supabase = await getAuthClientAsync()
-  const { data: session } = await supabase
+  // Require SERVICE_ROLE_KEY to read sessions (bypasses RLS)
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn("[v0] SUPABASE_SERVICE_ROLE_KEY not configured, cannot read sessions")
+    return null
+  }
+
+  const supabase = getSupabaseServiceClient()
+  const { data: session, error } = await supabase
     .from("sessions")
     .select("*")
     .eq("token", sessionToken)
     .gt("expires_at", new Date().toISOString())
     .maybeSingle()
+
+  if (error) {
+    console.error("[v0] Session query error:", error)
+    return null
+  }
 
   return session
 }
@@ -108,13 +101,23 @@ export async function getCurrentUser(): Promise<User | null> {
     return null
   }
 
-  // Use service role to bypass RLS when reading users
-  const supabase = await getAuthClientAsync()
-  const { data: user } = await supabase
+  // Require SERVICE_ROLE_KEY to read users (bypasses RLS)
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn("[v0] SUPABASE_SERVICE_ROLE_KEY not configured, cannot read users")
+    return null
+  }
+
+  const supabase = getSupabaseServiceClient()
+  const { data: user, error } = await supabase
     .from("users")
     .select("id, email, company_name, responsible_name, role, status, created_at, updated_at")
     .eq("id", session.user_id)
     .maybeSingle()
+
+  if (error) {
+    console.error("[v0] User query error:", error)
+    return null
+  }
 
   return user
 }
