@@ -48,12 +48,6 @@ export function AdminHeader({ userName, appName, logoUrl }: AdminHeaderProps) {
                 Usuários
               </Button>
             </Link>
-            <Link href="/admin/branding">
-              <Button variant="ghost" size="sm">
-                <Palette className="mr-2 h-4 w-4" />
-                Branding
-              </Button>
-            </Link>
           </nav>
         </div>
 
