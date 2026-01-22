@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getSupabaseServerClient } from "@/lib/supabase/server"
+import { getSupabaseServerClient, getSupabaseServiceClient } from "@/lib/supabase/server"
 import { encrypt } from "@/lib/encryption"
 import { rateLimit, getClientIp } from "@/lib/rate-limit"
 import { logAudit } from "@/lib/audit-log"
@@ -59,7 +59,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const supabase = await getSupabaseServerClient()
+    // Use SERVICE ROLE for initial setup (creating admin, settings, branding)
+    const supabase = await getSupabaseServiceClient()
 
     // Check if admin already exists
     const { data: existingAdmin, error: adminCheckError } = await supabase

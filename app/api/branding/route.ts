@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getSupabaseServerClient } from "@/lib/supabase/server"
+import { getSupabaseServerClient, getSupabaseServiceClient } from "@/lib/supabase/server"
 import { getCurrentUser } from "@/lib/auth"
 
 export async function GET() {
@@ -50,8 +50,6 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json()
     const { appName, logoUrl, primaryColor, secondaryColor } = body
-
-    const supabase = await getSupabaseServerClient()
     
     // Get current user
     const user = await getCurrentUser()
@@ -61,6 +59,17 @@ export async function PUT(request: Request) {
         { status: 401 }
       )
     }
+
+    // ONLY ADMIN can update branding
+    if (user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Acesso negado. Somente administradores podem alterar branding." },
+        { status: 403 }
+      )
+    }
+
+    // Use SERVICE ROLE client for write operations (bypasses RLS)
+    const supabase = await getSupabaseServiceClient()
 
     // Check if branding exists for this user
     const { data: existingBranding } = await supabase
