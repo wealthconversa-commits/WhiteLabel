@@ -65,13 +65,6 @@ export function BrandingForm() {
 
   return (
     <div className="container py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Personalizacao</h1>
-        <p className="text-muted-foreground mt-2">
-          Personalize a aparencia da sua aplicacao.
-        </p>
-      </div>
-
       <div className="grid gap-6 lg:grid-cols-2 max-w-5xl">
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">

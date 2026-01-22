@@ -48,12 +48,6 @@ export function AdminHeader({ userName, appName, logoUrl }: AdminHeaderProps) {
                 Usuários
               </Button>
             </Link>
-            <Link href="/admin/whatsapp">
-              <Button variant="ghost" size="sm">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                WhatsApp
-              </Button>
-            </Link>
             <Link href="/admin/branding">
               <Button variant="ghost" size="sm">
                 <Palette className="mr-2 h-4 w-4" />
@@ -74,25 +68,19 @@ export function AdminHeader({ userName, appName, logoUrl }: AdminHeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem asChild>
-                <Link href="/admin">
-                  <Users className="mr-2 h-4 w-4" />
-                  Usuários
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/whatsapp">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  WhatsApp
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/branding">
-                  <Palette className="mr-2 h-4 w-4" />
-                  Branding
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin">
+                <Users className="mr-2 h-4 w-4" />
+                Usuários
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/branding">
+                <Palette className="mr-2 h-4 w-4" />
+                Branding
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
                 Sair

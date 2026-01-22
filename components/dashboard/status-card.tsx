@@ -41,7 +41,7 @@ export function StatusCard() {
     return (
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Estados do WhatsApp</CardTitle>
+          <CardTitle className="text-lg">Status do {branding?.app_name || "WhatsApp"}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center p-4">
@@ -55,7 +55,7 @@ export function StatusCard() {
   return (
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Estados do {branding?.app_name || "WhatsApp"}</CardTitle>
+          <CardTitle className="text-lg">Status do {branding?.app_name || "WhatsApp"}</CardTitle>
           <CardDescription>{instances.length} instancia(s) criada(s)</CardDescription>
         </CardHeader>
       <CardContent className="space-y-3">

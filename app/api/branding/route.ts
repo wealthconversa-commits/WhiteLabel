@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
-import { getSupabaseServerClient } from "@/lib/supabase/server"
+import { getSupabaseServerClient, getSupabaseServiceClient } from "@/lib/supabase/server"
 import { getCurrentUser } from "@/lib/auth"
 
 export async function GET() {
   try {
-    const supabase = await getSupabaseServerClient()
-    
     // Get current user
     const user = await getCurrentUser()
     if (!user) {
@@ -15,24 +13,49 @@ export async function GET() {
         logo_url: null,
         primary_color: "oklch(0.55 0.18 145)",
         secondary_color: "oklch(0.96 0.01 145)",
-        app_name: "WhatsApp Manager",
+        app_name: "WhatsApp",
       })
     }
 
-    const { data: branding, error } = await supabase
-      .from("branding")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle()
+    let branding = null
+    let error = null
 
-    if (error || !branding) {
+    // Try using SERVICE ROLE client first (bypasses RLS if available)
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const supabaseService = getSupabaseServiceClient()
+      const result = await supabaseService
+        .from("branding")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle()
+      
+      branding = result.data
+      error = result.error
+    } else {
+      // Fallback: use regular server client
+      const supabaseRegular = await getSupabaseServerClient()
+      const result = await supabaseRegular
+        .from("branding")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle()
+      
+      branding = result.data
+      error = result.error
+    }
+
+    if (error) {
+      console.error("[v0] Branding GET error:", error)
+    }
+
+    if (!branding) {
       // Return default branding if none exists
       return NextResponse.json({
         id: null,
         logo_url: null,
         primary_color: "oklch(0.55 0.18 145)",
         secondary_color: "oklch(0.96 0.01 145)",
-        app_name: "WhatsApp Manager",
+        app_name: "WhatsApp",
       })
     }
 
@@ -51,8 +74,6 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { appName, logoUrl, primaryColor, secondaryColor } = body
 
-    const supabase = await getSupabaseServerClient()
-    
     // Get current user
     const user = await getCurrentUser()
     if (!user) {
@@ -61,6 +82,9 @@ export async function PUT(request: Request) {
         { status: 401 }
       )
     }
+
+    // Use SERVICE ROLE client for write operations (bypasses RLS)
+    const supabase = getSupabaseServiceClient()
 
     // Check if branding exists for this user
     const { data: existingBranding } = await supabase

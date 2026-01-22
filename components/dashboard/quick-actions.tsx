@@ -30,7 +30,7 @@ export function QuickActions({ onRefresh, isRefreshing }: QuickActionsProps) {
       >
         <Link href="/connect">
           <Smartphone className="w-5 h-5" />
-          <span className="text-xs font-medium">Instâncias</span>
+          <span className="text-xs font-medium">Conectar</span>
         </Link>
       </Button>
     </div>
