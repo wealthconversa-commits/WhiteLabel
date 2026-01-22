@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Shield, Users, Palette, LogOut, MessageSquare, User } from "lucide-react"
+import { Shield, Users, LogOut, User, Palette } from "lucide-react"
 
 interface AdminHeaderProps {
   userName: string
@@ -66,12 +66,6 @@ export function AdminHeader({ userName, appName, logoUrl }: AdminHeaderProps) {
               <Link href="/admin">
                 <Users className="mr-2 h-4 w-4" />
                 Usuários
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/admin/branding">
-                <Palette className="mr-2 h-4 w-4" />
-                Branding
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

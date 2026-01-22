@@ -4,12 +4,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useBranding } from "@/components/branding-provider"
 import { cn } from "@/lib/utils"
-import { MessageSquare, LayoutDashboard, Plug, Palette } from "lucide-react"
+import { MessageSquare, LayoutDashboard, Plug } from "lucide-react"
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/connect", label: "Connect", icon: Plug },
-  { href: "/branding", label: "Branding", icon: Palette },
 ]
 
 export function AppHeader() {
