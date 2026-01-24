@@ -180,17 +180,19 @@ export async function PUT(request: Request) {
     }
 
     // Step 5: Log the action for audit trail
-    await supabase.from("audit_logs").insert({
+    const { error: auditError } = await supabase.from("audit_logs").insert({
       action: "branding_updated",
       user_id: user.id,
       details: {
         app_name: appName,
         timestamp: new Date().toISOString(),
       },
-    }).catch((error) => {
-      // Log error but don't fail the request if audit log fails
-      console.error("[v0] Failed to insert audit log:", error)
     })
+
+    if (auditError) {
+      // Log error but don't fail the request if audit log fails
+      console.error("[v0] Failed to insert audit log:", auditError)
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
